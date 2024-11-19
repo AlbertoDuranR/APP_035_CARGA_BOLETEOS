@@ -1,4 +1,3 @@
-from models.dynamics import ModelDynamics
 from services.dataProcessing import DataProcessor
 from services.excelService import ExcelService
 import os
@@ -64,3 +63,31 @@ def processCuadresCaja(dynamicsModel, fechaInicio, fechaFin, rawDataPath, proces
         print("No se pudieron obtener datos de cuadres de caja.")
 
 
+
+def uploadBoleteos(appRrHhModel ,processedDataPath):
+    boleteosData = ExcelService.readExcel(processedDataPath)
+    print(boleteosData)
+
+    # si no es vacio
+    if not boleteosData.empty:
+        # eliminar duplicados
+        boleteosData = boleteosData.drop_duplicates()
+        # eliminar filas con valores nulos
+        boleteosData = boleteosData.dropna()
+
+        # guardar en la base de datos
+        print("Guardando boleteos en la base de datos...")
+
+
+def uploadCuadresCaja(appRrHhModel, processedDataPath):
+    cuadresData = ExcelService.readExcel(processedDataPath)
+    
+    # si no es vacio
+    if not cuadresData.empty:
+
+        response = appRrHhModel.setCuadresCaja(cuadresData)
+
+        print(response)
+
+        # guardar en la base de datos
+        print("Guardando cuadres de caja en la base de datos...")

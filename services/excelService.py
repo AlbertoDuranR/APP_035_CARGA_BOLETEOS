@@ -27,3 +27,16 @@ class ExcelService:
         """
         df.to_excel(filePath, index=False)
         print(f"Datos procesados guardados en: {filePath}")
+    
+    @staticmethod
+    def readExcel(filePath):
+        """
+        Lee un archivo Excel y devuelve un DataFrame.
+
+        Args:
+            filePath (str): Ruta del archivo Excel.
+
+        Returns:
+            pd.DataFrame: DataFrame con los datos del archivo Excel.
+        """
+        return pd.read_excel(filePath)

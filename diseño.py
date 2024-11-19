@@ -3,8 +3,9 @@ from ttkbootstrap.constants import *
 from ttkbootstrap.widgets import DateEntry
 from tkinter import filedialog
 from services.dateService import DateService
-from app import processBoleteos, processCuadresCaja
+from app import processBoleteos, processCuadresCaja, uploadBoleteos, uploadCuadresCaja
 from models.dynamics import ModelDynamics
+from models.rrhh import ModelRrHh
 import os
 import threading
 
@@ -164,6 +165,10 @@ def upload_files(boleteos_path, cuadres_path):
     print("Archivos seleccionados para carga:")
     print(f"Boleteos: {boleteos_path}")
     print(f"Cuadres de Caja: {cuadres_path}")
+
+    rrhhModel = ModelRrHh()
+
+    uploadCuadresCaja(rrhhModel, cuadres_path)
 
 
 
