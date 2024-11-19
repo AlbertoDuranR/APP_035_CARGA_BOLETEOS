@@ -3,7 +3,7 @@ import requests
 import json
 import pandas as pd
 from datetime import datetime, timedelta
-from services.dataProcessing import DataProcessor
+
 
 
 class ModelDynamics:

@@ -1,5 +1,6 @@
 from models.dynamics import ModelDynamics
 from services.dataProcessing import DataProcessor
+from services.excelService import ExcelService
 import os
 
 if __name__ == "__main__":
@@ -15,14 +16,14 @@ if __name__ == "__main__":
 
     if rawData is not None:
         # Guardar datos sin procesar
-        DataProcessor.saveRawData(rawData, rawDataPath)
+        ExcelService.saveRawData(rawData, rawDataPath)
 
         # Procesar datos
         try:
-            processedData = DataProcessor.processData(rawData)
+            processedData = DataProcessor.processDataBoleteos(rawData)
 
             # Guardar datos procesados
-            DataProcessor.saveProcessedData(processedData, processedDataPath)
+            ExcelService.saveProcessedData(processedData, processedDataPath)
         except ValueError as e:
             print(f"Error al procesar los datos: {str(e)}")
     else:
