@@ -1,14 +1,14 @@
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap.widgets import DateEntry
-from datetime import datetime
+from tkinter import filedialog
 from services.dateService import DateService
 
 def create_gui():
     # Crear la ventana principal
     root = ttk.Window(themename="journal")
     root.title("Gestión de Datos")
-    root.geometry("500x400")
+    root.geometry("600x400")
 
     # Crear un Notebook para las pestañas
     notebook = ttk.Notebook(root, bootstyle=PRIMARY)
@@ -23,17 +23,16 @@ def create_gui():
     notebook.add(frame_upload, text="Carga de Datos RRHH")
 
     # ---------------------- Contenido de Descarga de Datos ----------------------
-    # Etiqueta principal
     ttk.Label(frame_download, text="Descarga de Datos Dynamics", font=("Helvetica", 16)).pack(pady=10)
 
     # Sección de boleteos
     ttk.Label(frame_download, text="Seleccione los rangos de fecha para Boleteos").pack(anchor=W, pady=5)
     frame_boleteos = ttk.Frame(frame_download)
     frame_boleteos.pack(anchor=W, pady=5)
-    ttk.Label(frame_boleteos, text="Desde:").grid(row=0, column=0, padx=5, pady=5)
+    ttk.Label(frame_boleteos, text="Desde:").grid(row=0, column=0, padx=(20,0), pady=5)
     boleteos_desde = DateEntry(frame_boleteos, width=15)
     boleteos_desde.grid(row=0, column=1, padx=5, pady=5)
-    ttk.Label(frame_boleteos, text="Hasta:").grid(row=0, column=2, padx=5, pady=5)
+    ttk.Label(frame_boleteos, text="Hasta:").grid(row=0, column=2, padx=(80,0), pady=5)
     boleteos_hasta = DateEntry(frame_boleteos, width=15)
     boleteos_hasta.grid(row=0, column=3, padx=5, pady=5)
 
@@ -41,10 +40,10 @@ def create_gui():
     ttk.Label(frame_download, text="Seleccione los rangos de fecha para Cuadres de Caja").pack(anchor=W, pady=5)
     frame_cuadres = ttk.Frame(frame_download)
     frame_cuadres.pack(anchor=W, pady=5)
-    ttk.Label(frame_cuadres, text="Desde:").grid(row=0, column=0, padx=5, pady=5)
+    ttk.Label(frame_cuadres, text="Desde:").grid(row=0, column=0, padx=(20,0), pady=5)
     cuadres_desde = DateEntry(frame_cuadres, width=15)
     cuadres_desde.grid(row=0, column=1, padx=5, pady=5)
-    ttk.Label(frame_cuadres, text="Hasta:").grid(row=0, column=2, padx=5, pady=5)
+    ttk.Label(frame_cuadres, text="Hasta:").grid(row=0, column=2, padx=(80,0), pady=5)
     cuadres_hasta = DateEntry(frame_cuadres, width=15)
     cuadres_hasta.grid(row=0, column=3, padx=5, pady=5)
 
@@ -60,35 +59,55 @@ def create_gui():
     ttk.Button(frame_buttons, text="Abrir carpeta de salida", bootstyle=INFO).grid(row=0, column=1, padx=10)
 
     # ---------------------- Contenido de Carga de Datos ----------------------
-    # Etiqueta principal
     ttk.Label(frame_upload, text="Carga de Datos RRHH", font=("Helvetica", 16)).pack(pady=10)
 
     # Sección de carga de archivos
     frame_upload_files = ttk.Frame(frame_upload)
     frame_upload_files.pack(pady=10)
-    ttk.Label(frame_upload_files, text="Boleteos").grid(row=0, column=0, padx=5, pady=5)
-    ttk.Button(frame_upload_files, text="Seleccionar Archivo", bootstyle=PRIMARY).grid(row=0, column=1, padx=5, pady=5)
-    ttk.Label(frame_upload_files, text="Cuadres de Caja").grid(row=1, column=0, padx=5, pady=5)
-    ttk.Button(frame_upload_files, text="Seleccionar Archivo", bootstyle=PRIMARY).grid(row=1, column=1, padx=5, pady=5)
+
+    # Carga de boleteos
+    ttk.Label(frame_upload_files, text="Boleteos").grid(row=0, column=0, padx=0, pady=5)
+    boleteos_var = ttk.StringVar()
+    boleteos_entry = ttk.Entry(frame_upload_files, textvariable=boleteos_var, state=DISABLED, width=50)
+    boleteos_entry.grid(row=0, column=1, padx=5, pady=5)
+    ttk.Button(frame_upload_files, text="Seleccionar Archivo", bootstyle=PRIMARY, command=lambda: select_file(boleteos_var)).grid(row=0, column=2, padx=5, pady=5)
+
+    # Carga de cuadres de caja
+    ttk.Label(frame_upload_files, text="Cuadres de Caja").grid(row=1, column=0, padx=0, pady=5)
+    cuadres_var = ttk.StringVar()
+    cuadres_entry = ttk.Entry(frame_upload_files, textvariable=cuadres_var, state=DISABLED, width=50)
+    cuadres_entry.grid(row=1, column=1, padx=5, pady=5)
+    ttk.Button(frame_upload_files, text="Seleccionar Archivo", bootstyle=PRIMARY, command=lambda: select_file(cuadres_var)).grid(row=1, column=2, padx=5, pady=5)
 
     # Botón para cargar los archivos
-    ttk.Button(frame_upload, text="Cargar", bootstyle=SUCCESS).pack(pady=20)
+    ttk.Button(frame_upload, text="Cargar", bootstyle=SUCCESS, command=lambda: upload_files(boleteos_var.get(), cuadres_var.get())).pack(pady=20)
 
     # Iniciar la aplicación
     root.mainloop()
 
 
+def select_file(path_var):
+    """
+    Abre un cuadro de diálogo para seleccionar un archivo y asigna la ruta al Entry.
+    """
+    file_path = filedialog.askopenfilename(filetypes=[("Archivos Excel", "*.xlsx")])
+    if file_path:
+        path_var.set(file_path)
+
+
+def upload_files(boleteos_path, cuadres_path):
+    """
+    Simula la carga de archivos seleccionados y muestra las rutas.
+    """
+    print("Archivos seleccionados para carga:")
+    print(f"Boleteos: {boleteos_path}")
+    print(f"Cuadres de Caja: {cuadres_path}")
+
+
 def download_dates(boleteos_desde, boleteos_hasta, cuadres_desde, cuadres_hasta):
     """
     Imprime las fechas seleccionadas para boleteos y cuadres de caja en formato YYYY-MM-DD.
-
-    Args:
-        boleteos_desde (str): Fecha de inicio para boleteos.
-        boleteos_hasta (str): Fecha de fin para boleteos.
-        cuadres_desde (str): Fecha de inicio para cuadres de caja.
-        cuadres_hasta (str): Fecha de fin para cuadres de caja.
     """
-    # Imprimir las fechas seleccionadas
     print("Fechas seleccionadas:")
     print(f"Boleteos - Desde: {boleteos_desde} Hasta: {boleteos_hasta}")
     print(f"Cuadres de Caja - Desde: {cuadres_desde} Hasta: {cuadres_hasta}")
