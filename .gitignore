@@ -1,0 +1,4 @@
+env/*
+excel/original/*
+excel/procesados/*
+__pycache__/

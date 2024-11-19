@@ -1,0 +1,2 @@
+class ServicesAppRrhh:
+    pass
