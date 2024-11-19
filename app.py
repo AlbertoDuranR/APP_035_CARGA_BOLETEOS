@@ -64,24 +64,3 @@ def processCuadresCaja(dynamicsModel, fechaInicio, fechaFin, rawDataPath, proces
         print("No se pudieron obtener datos de cuadres de caja.")
 
 
-if __name__ == "__main__":
-    # Configuración de fechas
-    fechaInicio = "2024-01-01"
-    fechaFin = "2024-01-03"
-
-    # Directorios de salida Boleteos
-    rawDataPathBoleteos = os.path.join("excel", "original", "boleteos_raw.xlsx")
-    processedDataPathBoleteos = os.path.join("excel", "procesados", "boleteos_processed.xlsx")
-
-    # Directorios de salida Cuadres de caja
-    rawDataPathCuadres = os.path.join("excel", "original", "cuadres_raw.xlsx")
-    processedDataPathCuadres = os.path.join("excel", "procesados", "cuadres_processed.xlsx")
-
-    # Instanciar el modelo de Dynamics
-    dynamicsModel = ModelDynamics()
-
-    # Procesar Boleteos
-    # processBoleteos(dynamicsModel, fechaInicio, fechaFin, rawDataPathBoleteos, processedDataPathBoleteos)
-
-    # # Procesar Cuadres de Caja
-    processCuadresCaja(dynamicsModel, fechaInicio, fechaFin, rawDataPathCuadres, processedDataPathCuadres)
