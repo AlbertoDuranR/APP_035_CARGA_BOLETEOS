@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 from datetime import datetime, timedelta
+import json
 
 
 class ModelDynamics:
@@ -114,3 +115,47 @@ class ModelDynamics:
         else:
             print("No se encontraron datos en el rango especificado.")
             return None
+    
+    def getCuadresCaja(self, fechaInicio, fechaFin):
+        """
+        Obtiene los datos de cuadres de caja desde la API de Dynamics.
+
+        Args:
+            desde (str): Fecha de inicio en formato 'YYYY-MM-DD'.
+            hasta (str): Fecha de fin en formato 'YYYY-MM-DD'.
+
+        Returns:
+            pd.DataFrame: DataFrame con los datos de cuadres de caja.
+            None: Si ocurre un error o no se encuentran datos.
+        """
+        urlCuadresCaja = (
+            "https://mistr.operations.dynamics.com/api/services/"
+            "TRU_BoleteoDataGroupService/TRU_CuadreCajaDataService/extract"
+        )
+
+        # Preparar el payload para la solicitud
+        payload ={
+            "DataAreaId": "TRV",
+            "FromDate": fechaInicio,
+            "ToDate": fechaFin,
+        }
+
+        headers = {
+            "Authorization": self.token,
+            "Content-Type": "application/json",
+        }
+
+        # Realizar la solicitud a la API
+        response = requests.post(urlCuadresCaja, headers=headers, json=payload)
+
+        if response.status_code == 200:
+            # Convertir los datos en un DataFrame
+            dataDict = response.json().get("Data", [])
+            df = pd.DataFrame.from_dict(dataDict)
+
+            print(f"Datos obtenidos exitosamente desde {fechaInicio} hasta {fechaFin}.")
+            return df
+        else:
+            print(f"Error al obtener los cuadres de caja: {response.status_code} - {response.text}")
+            return None
+
