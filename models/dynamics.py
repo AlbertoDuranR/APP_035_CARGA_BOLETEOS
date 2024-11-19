@@ -146,14 +146,15 @@ class ModelDynamics:
         }
 
         # Realizar la solicitud a la API
+
+        print(f"Datos obtenidos exitosamente desde {fechaInicio} hasta {fechaFin}.")
+
         response = requests.post(urlCuadresCaja, headers=headers, json=payload)
 
         if response.status_code == 200:
             # Convertir los datos en un DataFrame
             dataDict = response.json().get("Data", [])
             df = pd.DataFrame.from_dict(dataDict)
-
-            print(f"Datos obtenidos exitosamente desde {fechaInicio} hasta {fechaFin}.")
             return df
         else:
             print(f"Error al obtener los cuadres de caja: {response.status_code} - {response.text}")

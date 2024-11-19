@@ -161,10 +161,10 @@ def download_dates(boleteos_desde, boleteos_hasta, cuadres_desde, cuadres_hasta,
             print("Error: No se ha seleccionado una carpeta de salida.")
             return
         
-        boleteos_desde = DateService.stringToDate(boleteos_desde)
-        boleteos_hasta = DateService.stringToDate(boleteos_hasta)
-        cuadres_desde = DateService.stringToDate(cuadres_desde)
-        cuadres_hasta = DateService.stringToDate(cuadres_hasta)
+        boleteos_desde = DateService.dateToString(boleteos_desde)
+        boleteos_hasta = DateService.dateToString(boleteos_hasta)
+        cuadres_desde = DateService.dateToString(cuadres_desde)
+        cuadres_hasta = DateService.dateToString(cuadres_hasta)
 
         
 
