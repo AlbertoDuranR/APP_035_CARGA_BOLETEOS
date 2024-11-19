@@ -65,6 +65,10 @@ def processCuadresCaja(dynamicsModel, fechaInicio, fechaFin, rawDataPath, proces
 
 
 
+def cleanBoleteos(appRrHhModel):
+    response = appRrHhModel.clean()
+    print(response)
+    
 def uploadBoleteos(appRrHhModel ,processedDataPath):
     boleteosData = ExcelService.readExcel(processedDataPath)
     # si no es vacio

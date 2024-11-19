@@ -3,7 +3,7 @@ from ttkbootstrap.constants import *
 from ttkbootstrap.widgets import DateEntry
 from tkinter import filedialog
 from services.dateService import DateService
-from app import processBoleteos, processCuadresCaja, uploadBoleteos, uploadCuadresCaja
+from app import processBoleteos, processCuadresCaja, uploadBoleteos, uploadCuadresCaja, cleanBoleteos
 from models.dynamics import ModelDynamics
 from models.rrhh import ModelRrHh
 import os
@@ -160,13 +160,12 @@ def download_dates(boleteos_desde, boleteos_hasta, cuadres_desde, cuadres_hasta,
         if not output_folder:
             print("Error: No se ha seleccionado una carpeta de salida.")
             return
-        
+
+        # formatear fechas        
         boleteos_desde = DateService.dateToString(boleteos_desde)
         boleteos_hasta = DateService.dateToString(boleteos_hasta)
         cuadres_desde = DateService.dateToString(cuadres_desde)
         cuadres_hasta = DateService.dateToString(cuadres_hasta)
-
-        
 
         # Crear rutas para archivos
         rawDataPathBoleteos = os.path.join(output_folder, "boleteos_raw.xlsx")
@@ -209,6 +208,9 @@ def upload_files(boleteos_path, cuadres_path):
         elif not cuadres_path:
             print("Error: No se seleccionó un archivo de cuadres de caja.")
             return
+        
+        # limpiar boleteos
+        cleanBoleteos(rrhhModel)
 
         # Procesar cuadres de caja
         uploadCuadresCaja(rrhhModel, cuadres_path)
