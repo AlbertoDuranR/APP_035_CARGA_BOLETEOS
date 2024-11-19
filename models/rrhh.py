@@ -33,13 +33,9 @@ class ModelRrHh:
         """
         try:
             # Validar que las columnas requeridas existan
-            required_columns = {"DPNumberDocumId_PE", "Boleto", "InvoiceAmount"}
+            required_columns = {"DPNumberDocumId_PE", "Boleteo", "InvoiceAmount"}
             if not required_columns.issubset(df.columns):
                 raise ValueError("El DataFrame no contiene las columnas requeridas: DPNumberDocumId_PE, Boleto, InvoiceAmount.")
-
-            # Procesar el DataFrame
-            df["InvoiceAmount"] = df["InvoiceAmount"].astype(float)  # Asegurar que los montos sean flotantes
-            df = df.drop_duplicates()  # Eliminar duplicados si es necesario
 
             # Convertir DataFrame a JSON
             json_data = df.to_dict(orient="records")
@@ -49,11 +45,7 @@ class ModelRrHh:
             headers = {"Content-Type": "application/json"}
             response = requests.post(url, json=json_data, headers=headers)
 
-            # Validar respuesta del servidor
-            if response.status_code == 200:
-                return {"success": True, "message": "Datos enviados correctamente", "response": response.json()}
-            else:
-                return {"success": False, "message": f"Error al enviar datos: {response.status_code}", "response": response.text}
+            return response.json()
 
         except Exception as e:
             return {"success": False, "message": f"Error al procesar y enviar los datos: {str(e)}"}
@@ -83,10 +75,7 @@ class ModelRrHh:
             response = requests.post(url, json=json_data, headers=headers)
 
             # Validar respuesta del servidor
-            if response.status_code == 200:
-                return {"success": True, "message": "Datos enviados correctamente", "response": response.json()}
-            else:
-                return {"success": False, "message": f"Error al enviar datos: {response.status_code}", "response": response.text}
+            return response.json()
 
         except Exception as e:
             return {"success": False, "message": f"Error al procesar y enviar los datos: {str(e)}"}

@@ -1,5 +1,6 @@
 from services.dataProcessing import DataProcessor
 from services.excelService import ExcelService
+from ttkbootstrap.dialogs import Messagebox
 import os
 
 
@@ -66,22 +67,17 @@ def processCuadresCaja(dynamicsModel, fechaInicio, fechaFin, rawDataPath, proces
 
 def uploadBoleteos(appRrHhModel ,processedDataPath):
     boleteosData = ExcelService.readExcel(processedDataPath)
-    print(boleteosData)
-
     # si no es vacio
     if not boleteosData.empty:
-        # eliminar duplicados
-        boleteosData = boleteosData.drop_duplicates()
-        # eliminar filas con valores nulos
-        boleteosData = boleteosData.dropna()
-
+        response = appRrHhModel.setBoleteos(boleteosData)
+        print(response)
         # guardar en la base de datos
-        print("Guardando boleteos en la base de datos...")
+        print("Fin carga Boleteos...")
 
 
 def uploadCuadresCaja(appRrHhModel, processedDataPath):
     cuadresData = ExcelService.readExcel(processedDataPath)
-    
+
     # si no es vacio
     if not cuadresData.empty:
 
@@ -90,4 +86,4 @@ def uploadCuadresCaja(appRrHhModel, processedDataPath):
         print(response)
 
         # guardar en la base de datos
-        print("Guardando cuadres de caja en la base de datos...")
+        print("Fin cuadres de caja..")

@@ -8,7 +8,7 @@ from models.dynamics import ModelDynamics
 from models.rrhh import ModelRrHh
 import os
 import threading
-
+from ttkbootstrap.dialogs import Messagebox  # Importa Messagebox correctamente
 
 def create_gui():
     root = ttk.Window(themename="journal")
@@ -43,10 +43,10 @@ def create_gui():
     download_button.configure(command=lambda: start_thread(
         download_dates,
         args=(
-            DateService.dateToString(boleteos_desde.entry.get()),
-            DateService.dateToString(boleteos_hasta.entry.get()),
-            DateService.dateToString(cuadres_desde.entry.get()),
-            DateService.dateToString(cuadres_hasta.entry.get()),
+            boleteos_desde.entry.get(),
+            boleteos_hasta.entry.get(),
+            cuadres_desde.entry.get(),
+            cuadres_hasta.entry.get(),
             output_folder_var.get()
         ),
         button=download_button
@@ -82,10 +82,12 @@ def create_date_range_selector(parent, label_text):
     ttk.Label(frame_dates, text="Desde:").grid(row=0, column=0, padx=(20, 0), pady=5)
     desde_entry = DateEntry(frame_dates, width=15)
     desde_entry.grid(row=0, column=1, padx=5, pady=5)
+    desde_entry.entry.delete(0, "end")
 
     ttk.Label(frame_dates, text="Hasta:").grid(row=0, column=2, padx=(80, 0), pady=5)
     hasta_entry = DateEntry(frame_dates, width=15)
     hasta_entry.grid(row=0, column=3, padx=5, pady=5)
+    hasta_entry.entry.delete(0, "end")
 
     return desde_entry, hasta_entry
 
@@ -145,31 +147,77 @@ def start_thread(target, args=(), button=None):
 
 def download_dates(boleteos_desde, boleteos_hasta, cuadres_desde, cuadres_hasta, output_folder):
     """
-    Realiza el procesamiento de boleteos y cuadres en un hilo separado.
+    Realiza el procesamiento de boleteos y cuadres con validación de entradas.
     """
-    rawDataPathBoleteos = os.path.join(output_folder, "boleteos_raw.xlsx")
-    processedDataPathBoleteos = os.path.join(output_folder, "boleteos_processed.xlsx")
+    try:
+        # Validar las fechas y la carpeta de salida
+        if not boleteos_desde or not boleteos_hasta:
+            print("Error: Las fechas de boleteos no están definidas.")
+            return
+        if not cuadres_desde or not cuadres_hasta:
+            print("Error: Las fechas de cuadres de caja no están definidas.")
+            return
+        if not output_folder:
+            print("Error: No se ha seleccionado una carpeta de salida.")
+            return
+        
+        boleteos_desde = DateService.stringToDate(boleteos_desde)
+        boleteos_hasta = DateService.stringToDate(boleteos_hasta)
+        cuadres_desde = DateService.stringToDate(cuadres_desde)
+        cuadres_hasta = DateService.stringToDate(cuadres_hasta)
 
-    rawDataCuadres = os.path.join(output_folder, "cuadres_raw.xlsx")
-    processedDataCuadres = os.path.join(output_folder, "cuadres_processed.xlsx")
+        
 
-    dynamicsModel = ModelDynamics()
-    processBoleteos(dynamicsModel, boleteos_desde, boleteos_hasta, rawDataPathBoleteos, processedDataPathBoleteos)
-    processCuadresCaja(dynamicsModel, cuadres_desde, cuadres_hasta, rawDataCuadres, processedDataCuadres)
+        # Crear rutas para archivos
+        rawDataPathBoleteos = os.path.join(output_folder, "boleteos_raw.xlsx")
+        processedDataPathBoleteos = os.path.join(output_folder, "boleteos_processed.xlsx")
+
+        rawDataCuadres = os.path.join(output_folder, "cuadres_raw.xlsx")
+        processedDataCuadres = os.path.join(output_folder, "cuadres_processed.xlsx")
+
+        # Procesar datos de Dynamics
+        dynamicsModel = ModelDynamics()
+        
+        # Procesar boleteos
+        processBoleteos(dynamicsModel, boleteos_desde, boleteos_hasta, rawDataPathBoleteos, processedDataPathBoleteos)
+        print("Boleteos procesados y guardados correctamente.")
+
+        # Procesar cuadres de caja
+        processCuadresCaja(dynamicsModel, cuadres_desde, cuadres_hasta, rawDataCuadres, processedDataCuadres)
+        print("Cuadres de caja procesados y guardados correctamente.")
+
+    except Exception as e:
+        print(f"Error inesperado durante el procesamiento: {str(e)}")
+
+
+
 
 
 def upload_files(boleteos_path, cuadres_path):
     """
-    Simula la carga de archivos seleccionados y muestra las rutas.
+    Procesa los archivos seleccionados y muestra los mensajes de resultado en la consola.
     """
-    print("Archivos seleccionados para carga:")
-    print(f"Boleteos: {boleteos_path}")
-    print(f"Cuadres de Caja: {cuadres_path}")
-
     rrhhModel = ModelRrHh()
 
-    uploadCuadresCaja(rrhhModel, cuadres_path)
+    try:
+        if not boleteos_path and not cuadres_path:
+            print("Error: No se seleccionaron archivos para cargar.")
+            return
+        elif not boleteos_path:
+            print("Error: No se seleccionó un archivo de boleteos.")
+            return
+        elif not cuadres_path:
+            print("Error: No se seleccionó un archivo de cuadres de caja.")
+            return
 
+        # Procesar cuadres de caja
+        uploadCuadresCaja(rrhhModel, cuadres_path)
+
+        # Procesar boleteos
+        uploadBoleteos(rrhhModel, boleteos_path)
+
+    except Exception as e:
+        print(f"Error inesperado durante la carga de archivos: {str(e)}")
 
 
 
